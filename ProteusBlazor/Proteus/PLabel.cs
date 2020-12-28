@@ -1,15 +1,16 @@
-﻿using Microsoft.JSInterop;
+﻿using GLOM;
+using Microsoft.JSInterop;
 
 namespace Proteus
 {
     public class PLabel:ProteusComponent
     {
-        public PLabel(IJSRuntime runtime, string labelText) : base(
-            runtime,MakeHtml(labelText))
+        public PLabel(ProteusContext ctxt, string labelText) : base(
+            ctxt,MakeHTML(labelText))
         {
         }
 
-        private static string MakeHtml(string labelText)
+        private static string MakeHTML(string labelText)
         {
             return "<span>" + labelText + "</span>";
         }

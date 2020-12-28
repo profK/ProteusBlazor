@@ -16,7 +16,8 @@ var Proteus = {
         var template = document.createElement('template');
         html = html.trim(); // Never return a text node of whitespace as the result
         template.innerHTML = html;
-        return template.content.firstChild;
+        let el =document.body.appendChild(template.content.firstChild);
+        return el;
     },
     
     
@@ -25,19 +26,26 @@ var Proteus = {
      * @return {NodeList}
      * @example var rows = htmlToElements('<tr><td>foo</td></tr><tr><td>bar</td></tr>');
      */
-    htmlToElements:function (html)  {
-        var template = document.createElement('template');
-        template.innerHTML = html;
+    htmlToElements:function (tag,innerHtml)  {
+        var template = document.createElement(tag);
+        template.innerHTML = innerHtml;
+        document.body.appendChild(template);
         return template.content.childNodes;
     },
 
     getElementSize: function( el ) {
        let domRect = el.getBoundingClientRect()
-        return [el.width,e.height];
+
+        return [domRect.width,domRect.height];
     },
-    setElementLayout(x,y,width,height){
-        el.scrollLeft = el.offsetLeft - x;
-        el.scrollTop = el.offsetTop - y;
+    setElementLayout(el,x,y,width,height){
+        console.log("x,y"+x+","+y)
+        el.style.position = "fixed";
+        el.style.left = x+"px";
+        el.style.top= y+"px";
+    },
+    log(str){
+        console.log(str);
     }
  
 }

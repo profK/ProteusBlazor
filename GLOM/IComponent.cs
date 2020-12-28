@@ -17,7 +17,7 @@ namespace GLOM
         Size PreferredSize { get; }
         Size MinSize { get; }
 
-        public void Layout(ISystemContext ctxt,Size space);
+        public  void Layout(ISystemContext ctxt, Point pos, Size space);
         public void Render(ISystemContext ctxt, Matrix parentXform);
 
       
@@ -25,8 +25,6 @@ namespace GLOM
 
     public interface ISystemContext
     {
-        //This is an empty marker interface.  it should be instantiated
-        //by the render system in order to hold any context necessary
-        //for its operation.
+        public void Log(string s);
     }
 } 

@@ -1,8 +1,10 @@
-﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using Microsoft.AspNetCore.Components;
+﻿
+using System.Threading.Tasks;
+using System.Transactions;
+using GLOM;
 using Microsoft.JSInterop;
-using IComponent = GLOM.IComponent;
+using GLOM.Geometry;
+
 
 namespace Proteus
 
@@ -14,48 +16,46 @@ namespace Proteus
      * IMPORTANT: The stylistic and content parts of this component are fixed by the HTML when
      * it is created.  To change them, make a new component.
      */
-    public class ProteusComponent : IComponent
+    public abstract class ProteusComponent : AbstractComponent
     {
-        
-      
-        public IJSRuntime JSRuntime { get; set; }
-        
-        private readonly IJSObjectReference _htmlElement;
-
-        public ProteusComponent(IJSRuntime runtime,string html)
-        {
-            JSRuntime = runtime;   
-            // cant be asynch in constructor, simpelr if it
-            // isnt anyway
-         
-            // force this to by synchronous because it wont work ti this is done
-            _htmlElement = runtime.InvokeAsync<IJSObjectReference>(
-                "Proteus.htmlToElement", html).GetAwaiter().GetResult();
-            var preferredSizeArray = runtime.InvokeAsync<int[]>(
-                    "Proteus. getElementSize", _htmlElement).GetAwaiter().GetResult();
-            PreferredSize = new Size(preferredSizeArray[0], preferredSizeArray[1]);
-            MinSize = PreferredSize; //this is a guess that it starts at min size
-        }
-
      
-        public async void Render(Matrix parentXform)
+        private readonly IJSObjectReference _htmlElement;
+  
+
+        public ProteusComponent(ProteusContext ctxt, string html)
         {
-            parentXform.Multiply(Transformation);
-            Point[] pos =
-            {
-                new Point(Position.X, Position.Y)
-            };
-            parentXform.TransformPoints(pos);
-            //throw new System.NotImplementedException();
-            await JSRuntime.InvokeVoidAsync("Proteus.setElementLayout",
-                pos[0].X, pos[1].Y, Size.Width, Size.Height);
+            _htmlElement = ctxt.JsRuntime.Invoke<IJSObjectReference>(
+                "Proteus.htmlToElement", html);
+            float[] sizeArray = ctxt.JsRuntime.Invoke<float[]>(
+                "Proteus.getElementSize", _htmlElement);
+            PreferredSize = new Size(sizeArray[0], sizeArray[1]);
+            ctxt.Log( "preferred size=" + PreferredSize.Width + "," + PreferredSize.Height);
+            MinSize = PreferredSize;
+            
         }
 
-        public Point Position { get; set; }
+        public override void Render(ISystemContext sysCtxt, Matrix parentXform)
+        {
+            ProteusContext pctxt = sysCtxt as ProteusContext;
+        
+            pctxt.Log("current\n"+Transformation.ToString());
+            Matrix postMult = parentXform.Multiply(Transformation);
+            pctxt.Log("post multiply\n"+postMult.ToString());
+            Point pos = postMult.TransformPoint(new Point(0,0));
+            pctxt.Log("pos="+pos.ToString());
+            pctxt.JsRuntime.InvokeVoid("Proteus.setElementLayout",
+            _htmlElement,pos.X, pos.Y, Size.Width, Size.Height);
+        }
 
-        public Matrix Transformation { get; set; }
-        public Size Size { get; set; }
-        public Size PreferredSize { get; }
-        public Size MinSize { get; }
+        public override void Layout(ISystemContext ctxt, Point pos, Size space)
+        {
+            base.Layout(ctxt, pos, space);
+            ctxt.Log("layout at "+pos.X+","+pos.Y);
+            ctxt.Log("size= "+Size.Width+","+Size.Height);
+           
+        }
+
+        
+        
     }
 }

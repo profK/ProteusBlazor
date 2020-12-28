@@ -14,7 +14,7 @@ namespace GLOM
     public class VerticalLayout : AbstractContainer<VerticalLayoutInfo>
     {
 
-        public override Size PreferredSize
+        public override  Size PreferredSize
         {
             get
             {
@@ -47,31 +47,33 @@ namespace GLOM
             }
         }
 
-        public override void Layout(ISystemContext ctxt, Size space)
+        public override void Layout(ISystemContext ctxt, Point pos, Size space)
         {
-
+            base.Layout(ctxt,pos,space);
             Size myPreferredISize = PreferredSize;
             int pad = (int)(space.Height - myPreferredISize.Height) / Children.Count;
+            float yAcc = 0;
             foreach (var tuple in Children)
             {
                 IComponent comp = tuple.Item1;
                 Size compISize = comp.PreferredSize;
                 float w = compISize.Width;
                 float h = compISize.Height;
-                float yAcc = 0;
+
                 if (ExpandChildenHorizontally)
                 {
                     w = myPreferredISize.Width;
-                    
+
                 }
 
                 if (ExpandChildrenVertically)
                 {
-                    h  += pad;
+                    h += pad;
                 }
 
-                comp.Size = new Size(w, h);
-                comp.Position = new Point((space.Width - comp.Size.Width) / 2,yAcc);
+                comp.Layout(ctxt, new Point(0, yAcc),
+                    new Size(w, h));
+                ctxt.Log("comp Size H ="+comp.Size.Height);
                 yAcc += comp.Size.Height;
             }
         }

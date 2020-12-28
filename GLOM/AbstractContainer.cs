@@ -7,14 +7,8 @@ namespace GLOM
     public abstract class AbstractContainer<TLayoutInfo> : AbstractComponent,
         IContainer<TLayoutInfo>
     {
-        public Point Position { get; set; }
-        public Matrix Transformation { get; set; }
-        public Size Size { get; set; }
-        
         public bool ExpandChildrenVertically { get; set; }
         public bool ExpandChildenHorizontally { get; set; }
-        public abstract Size PreferredSize { get; }
-        public abstract Size MinSize { get; }
 
         public AbstractContainer()
         {
@@ -30,6 +24,8 @@ namespace GLOM
                 tuple.Item1.Render(ctxt, parentMatrix);
             }
         }
+
+
 
         public void Add(IComponent component, TLayoutInfo layoutInfo = default(TLayoutInfo))
         {

@@ -14,7 +14,7 @@ namespace GLOM
     public class HorizontalLayout : AbstractContainer<HorizontalLayoutInfo>
     {
 
-        public override Size PreferredSize
+        public  override Size PreferredSize
         {
             get
             {
@@ -31,7 +31,7 @@ namespace GLOM
             }
         }
 
-        public override Size MinSize
+        public  override Size MinSize
         {
             get
             {
@@ -47,18 +47,19 @@ namespace GLOM
             }
         }
 
-        public override void Layout(ISystemContext ctxt, Size space)
+        public override void Layout(ISystemContext ctxt, Point pos,Size space)
         {
-
+            base.Layout(ctxt,pos,space);
             Size myPreferredISize = PreferredSize;
             int pad = (int)(space.Width - myPreferredISize.Width) / Children.Count;
+            float xAcc = 0;
             foreach (var tuple in Children)
             {
                 IComponent comp = tuple.Item1;
                 Size compISize = comp.PreferredSize;
                 float w = compISize.Width;
                 float h = compISize.Height;
-                float xAcc = 0;
+              
                 if (ExpandChildenHorizontally)
                 {
                     w += pad;
@@ -69,8 +70,7 @@ namespace GLOM
                     h = myPreferredISize.Height;
                 }
 
-                comp.Size = new Size(w, h);
-                comp.Position = new Point(xAcc, (space.Height - comp.Size.Height) / 2);
+                comp.Layout(ctxt,new Point(xAcc,0),new Size(w,h));
                 xAcc += comp.Size.Width;
             }
         }

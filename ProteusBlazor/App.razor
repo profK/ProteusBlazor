@@ -1,0 +1,40 @@
+﻿@using System.Drawing.Drawing2D
+@using System.Numerics
+@using GLOM
+@using GLOM.Geometry
+<!--
+If you want to enable Blazor routing, you should remove all of this contents,
+and uncomment the below line. (See also: https://docs.microsoft.com/en-us/aspnet/core/blazor/routing )
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" />
+    </Found>
+    <NotFound>
+        <LayoutView>
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+-->
+
+
+@inject IJSInProcessRuntime jsRuntime
+@code {
+
+    protected override void OnInitialized()
+    {
+        ProteusContext pctxt = new ProteusContext(jsRuntime);
+        PLabel label1 = new PLabel(pctxt, "One");
+        PLabel label2 = new PLabel(pctxt, "TwoTwoTwo");
+        PLabel label3= new PLabel(pctxt, "Three");
+        VerticalLayout hl = new VerticalLayout();
+        hl.Add(label1);
+        hl.Add(label2);
+        hl.Add(label3);
+        hl.Layout(pctxt, new Point(0, 0), new Size(1024, 800));
+        hl.Render(pctxt,new Matrix(Matrix4x4.Identity));
+    }
+
+}
